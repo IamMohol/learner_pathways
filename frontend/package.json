@@ -12,6 +12,7 @@
     "@heroui/avatar": "^2.2.21",
     "@heroui/breadcrumbs": "^2.2.21",
     "@heroui/button": "2.2.26",
+    "@heroui/checkbox": "^2.3.26",
     "@heroui/chip": "^2.2.21",
     "@heroui/code": "2.2.20",
     "@heroui/dropdown": "^2.3.26",
@@ -19,7 +20,7 @@
     "@heroui/image": "^2.2.16",
     "@heroui/input": "^2.4.27",
     "@heroui/kbd": "2.2.21",
-    "@heroui/link": "2.2.22",
+    "@heroui/link": "^2.2.22",
     "@heroui/listbox": "2.3.25",
     "@heroui/modal": "^2.2.23",
     "@heroui/navbar": "2.2.24",
@@ -31,14 +32,17 @@
     "@heroui/theme": "2.4.22",
     "@heroui/tooltip": "^2.2.23",
     "@heroui/user": "^2.2.21",
+    "@prisma/client": "^6.16.2",
     "@react-aria/visually-hidden": "3.8.27",
+    "bcrypt": "^6.0.0",
     "clsx": "2.1.1",
     "framer-motion": "11.18.2",
     "intl-messageformat": "10.7.16",
     "next": "15.3.1",
     "next-themes": "0.4.6",
     "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "react-dom": "18.3.1",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@eslint/compat": "1.2.8",
@@ -62,6 +66,7 @@
     "globals": "16.0.0",
     "postcss": "^8.5.6",
     "prettier": "3.5.3",
+    "prisma": "^6.16.2",
     "tailwind-variants": "3.1.1",
     "tailwindcss": "^4.1.11",
     "typescript": "5.6.3"

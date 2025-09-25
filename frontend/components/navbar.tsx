@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Navbar as HeroUINavbar,
   NavbarContent,
@@ -12,7 +11,6 @@ import {
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
-  DropdownSection,
   DropdownItem,
 } from "@heroui/dropdown";
 import { Avatar } from "@heroui/avatar";
@@ -21,23 +19,28 @@ import { Kbd } from "@heroui/kbd";
 import { Link } from "@heroui/link";
 import { Input } from "@heroui/input";
 import { link as linkStyles } from "@heroui/theme";
+import { useDisclosure } from "@heroui/modal";
 import NextLink from "next/link";
 import clsx from "clsx";
-
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { SearchIcon, Logo } from "@/components/icons";
+import LoginModal from "@/components/modalAuth";
+import RegisterModal from "@/components/modalRegister";
+import { useAuth } from "@/lib/authContext";
 
 export const Navbar = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-  };
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-  };
+  const { isLoggedIn, login, logout } = useAuth();
+  const {
+    isOpen: isLoginOpen,
+    onOpen: onLoginOpen,
+    onOpenChange: onLoginOpenChange,
+  } = useDisclosure();
+  const {
+    isOpen: isRegisterOpen,
+    onOpen: onRegisterOpen,
+    onOpenChange: onRegisterOpenChange,
+  } = useDisclosure();
 
   const searchInput = (
     <Input
@@ -86,7 +89,6 @@ export const Navbar = () => {
           ))}
         </div>
       </NavbarContent>
-
       <NavbarContent as="div" className="items-center" justify="end">
         <Input
           classNames={{
@@ -120,22 +122,32 @@ export const Navbar = () => {
                 <p className="font-semibold">username</p>
               </DropdownItem>
               <DropdownItem key="settings">My Settings</DropdownItem>
-              <DropdownItem key="logout" color="danger" onPress={handleLogout}>
+              <DropdownItem key="logout" color="danger" onPress={logout}>
                 Log Out
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
         ) : (
-          <Button
-            as={NextLink}
-            color="primary"
-            href="#"
-            variant="flat"
-            onPress={handleLogin}
-          >
-            Log In
-          </Button>
+          <>
+            <Button color="primary" variant="flat" onPress={onLoginOpen}>
+              Log In
+            </Button>
+            <Button color="secondary" variant="flat" onPress={onRegisterOpen}>
+              Register
+            </Button>
+          </>
         )}
+        <LoginModal
+          isOpen={isLoginOpen}
+          onOpenChange={onLoginOpenChange}
+          onLogin={login}
+          onOpenRegister={onRegisterOpen}
+        />
+        <RegisterModal
+          isOpen={isRegisterOpen}
+          onOpenChange={onRegisterOpenChange}
+          onRegister={login}
+        />
       </NavbarContent>
       <NavbarMenu>
         {searchInput}
@@ -150,7 +162,7 @@ export const Navbar = () => {
                       ? "danger"
                       : "foreground"
                 }
-                href="#"
+                href={item.href}
                 size="lg"
               >
                 {item.label}
