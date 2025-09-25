@@ -1,20 +1,67 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import { PrismaClient } from "@/lib/generated/prisma";
+import bcrypt from "bcrypt";
 
-export async function POST(request: NextRequest) {
-  const { username, password } = await request.json();
-  if (username === "teacher" && password === "pass123") {
-    return NextResponse.json({
-      message: "Login successful",
-      token: "dummy-jwt-token-12345",
+const prisma = new PrismaClient();
+
+export async function POST(req: Request) {
+  try {
+    const { username, firstName, lastName, password, confirmPassword } =
+      await req.json();
+
+    // Validation
+    if (!username || !firstName || lastName || !password || !confirmPassword) {
+      return NextResponse.json(
+        { message: "All fields are required" },
+        { status: 400 }
+      );
+    }
+
+    if (password !== confirmPassword) {
+      return NextResponse.json(
+        { message: "Passwords do not match" },
+        { status: 400 }
+      );
+    }
+
+    // Check if username or email already exists
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [{ username }],
+      },
     });
-  }
-  return NextResponse.json({ detail: "Invalid credentials" }, { status: 401 });
-}
 
-export async function GET(request: NextRequest) {
-  const token = request.headers.get("Authorization")?.replace("Bearer ", "");
-  if (token === "dummy-jwt-token-12345") {
-    return NextResponse.json({ valid: true });
+    if (existingUser) {
+      return NextResponse.json(
+        { message: "Username or email already exists" },
+        { status: 400 }
+      );
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Save user to database
+    await prisma.user.create({
+      data: {
+        username,
+        firstName,
+        lastName,
+        password: hashedPassword,
+      },
+    });
+
+    return NextResponse.json(
+      { message: "User registered successfully" },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error("Registration error:", error);
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    );
+  } finally {
+    await prisma.$disconnect();
   }
-  return NextResponse.json({ detail: "Invalid token" }, { status: 401 });
 }
