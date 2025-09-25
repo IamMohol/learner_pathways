@@ -9,20 +9,13 @@ export const siteConfig = {
       href: "/",
     },
     {
-      label: "Learners",
-      href: "/learners",
+      label: "Teacher Hub",
+      href: "/hub",
     },
+
     {
-      label: "Marks",
-      href: "/marks",
-    },
-    {
-      label: "Pathway Report",
-      href: "/pathway",
-    },
-    {
-      label: "About",
-      href: "/about",
+      label: "Pathway Reports",
+      href: "/reports",
     },
   ],
   navMenuItems: [

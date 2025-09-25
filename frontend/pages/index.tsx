@@ -35,7 +35,6 @@ export default function IndexPage() {
               variant: "shadow",
               size: "lg",
             })}
-            href={siteConfig.links.docs}
           >
             Get Started
           </Button>
