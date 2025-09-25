@@ -20,7 +20,7 @@ export default function ReportsPage() {
           <br />
           <div className="flex-row">
             <div className={subtitle({ class: "mt-4" })}>
-              Generate learner pathways
+              Generate learner pathways TEsts
             </div>
           </div>
           {/* <Button color="success" endContent={<AddIcon />}>
