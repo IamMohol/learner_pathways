@@ -1,20 +1,44 @@
-import { NextRequest, NextResponse } from "next/server";
-import { v4 as uuidv4 } from "uuid";
-import { Learner } from "@/lib/types";
-let learners: Learner[] = []; // In-memory data
+import { NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
 
-export async function POST(request: NextRequest) {
-  const { name, subjects } = await request.json();
-  const learner: Learner = {
-    id: uuidv4(),
-    name,
-    subjects,
-    marks: [],
-  };
-  learners.push(learner);
-  return NextResponse.json({ id: learner.id, name: learner.name });
-}
+const prisma = new PrismaClient();
 
 export async function GET() {
-  return NextResponse.json(learners);
+  try {
+    const learners = await prisma.learner.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    return NextResponse.json(learners);
+  } catch (error) {
+    console.error("Error fetching learners:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch learners" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(req: Request) {
+  try {
+    const { firstName, middleName, lastName } = await req.json();
+
+    if (!firstName || !lastName) {
+      return NextResponse.json(
+        { error: "First name and last name are required" },
+        { status: 400 }
+      );
+    }
+
+    const learner = await prisma.learner.create({
+      data: { firstName, middleName, lastName },
+    });
+
+    return NextResponse.json(learner, { status: 201 });
+  } catch (error) {
+    console.error("Error creating learner:", error);
+    return NextResponse.json(
+      { error: "Failed to create learner" },
+      { status: 500 }
+    );
+  }
 }

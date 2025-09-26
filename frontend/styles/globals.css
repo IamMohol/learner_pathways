@@ -1,3 +1,93 @@
 @import "tailwindcss";
 
 @config "../tailwind.config.js";
+
+/* Custom navbar styles */
+.navbar {
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+}
+
+.navbar-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar-desktop {
+  display: none;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 1rem;
+}
+
+.navbar-desktop li {
+  display: inline-block;
+}
+
+.navbar-desktop a {
+  color: #333;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+}
+
+.navbar-auth {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.navbar-toggle {
+  color: #333;
+}
+
+.navbar-menu {
+  display: none;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-menu.is-active {
+  display: block;
+}
+
+.navbar-menu li {
+  padding: 0.5rem 1rem;
+}
+
+.navbar-menu a {
+  display: block;
+  color: #333;
+  text-decoration: none;
+}
+
+@media (min-width: 640px) {
+  .navbar-desktop {
+    display: flex;
+  }
+  .navbar-toggle {
+    display: none;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .navbar,
+  .navbar-menu {
+    background: #1a1a1a;
+  }
+  .navbar-desktop a,
+  .navbar-menu a,
+  .navbar-toggle {
+    color: #fff;
+  }
+}

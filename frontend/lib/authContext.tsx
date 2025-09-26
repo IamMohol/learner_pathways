@@ -23,6 +23,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (typeof window !== "undefined") {
       localStorage.setItem("isLoggedIn", isLoggedIn.toString());
+      // ✅ sync cookie for middleware
+      document.cookie = `isLoggedIn=${isLoggedIn}; path=/`;
     }
   }, [isLoggedIn]);
 
@@ -34,6 +36,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoggedIn(false);
     if (typeof window !== "undefined") {
       localStorage.removeItem("isLoggedIn");
+      // ✅ clear cookie
+      document.cookie = "isLoggedIn=; path=/; max-age=0";
     }
   };
 

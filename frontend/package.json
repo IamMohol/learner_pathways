@@ -8,6 +8,9 @@
     "start": "next start",
     "lint": "eslint --fix"
   },
+  "prisma": {
+    "seed": "node ./prisma/seed.js"
+  },
   "dependencies": {
     "@heroui/avatar": "^2.2.21",
     "@heroui/breadcrumbs": "^2.2.21",
@@ -50,7 +53,7 @@
     "@eslint/js": "9.25.1",
     "@tailwindcss/postcss": "^4.1.11",
     "@types/bcrypt": "^6.0.0",
-    "@types/node": "20.5.7",
+    "@types/node": "^20.5.7",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
     "@typescript-eslint/eslint-plugin": "8.34.1",
@@ -70,6 +73,7 @@
     "prisma": "^6.16.2",
     "tailwind-variants": "3.1.1",
     "tailwindcss": "^4.1.11",
-    "typescript": "5.6.3"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
   }
 }
