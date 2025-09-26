@@ -10,7 +10,7 @@ export async function POST(req: Request) {
       await req.json();
 
     // Validation
-    if (!username || !firstName || lastName || !password || !confirmPassword) {
+    if (!username || !firstName || !lastName || !password || !confirmPassword) {
       return NextResponse.json(
         { message: "All fields are required" },
         { status: 400 }

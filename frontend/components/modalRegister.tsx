@@ -74,7 +74,7 @@ export default function RegisterModal({
         return;
       }
 
-      // Success: Call onRegister to update isLoggedIn and close modal
+      // Success: Update AuthContext and close modal
       onRegister?.();
       onOpenChange();
     } catch (err) {
@@ -108,7 +108,7 @@ export default function RegisterModal({
                 label="First Name"
                 placeholder="Enter your first name"
                 variant="bordered"
-                name="lastName"
+                name="firstName"
                 value={formData.firstName}
                 onChange={handleInputChange}
               />

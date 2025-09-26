@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Modal,
   ModalContent,
@@ -6,9 +7,8 @@ import {
   ModalFooter,
 } from "@heroui/modal";
 import { Button } from "@heroui/button";
-import { Link } from "@heroui/link";
 import { Input } from "@heroui/input";
-import { Checkbox } from "@heroui/checkbox";
+import { Link } from "@heroui/link";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -24,6 +24,53 @@ export default function LoginModal({
   onLogin,
   onOpenRegister,
 }: LoginModalProps) {
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+  });
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async () => {
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      if (!formData.username || !formData.password) {
+        setError("Username and password are required");
+        setIsLoading(false);
+        return;
+      }
+
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || "Login failed");
+        setIsLoading(false);
+        return;
+      }
+
+      // Success: Update AuthContext and close modal
+      onLogin?.();
+      onOpenChange();
+    } catch (err) {
+      console.error("Login error:", err);
+      setError("An error occurred. Please try again.");
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Modal
       backdrop="blur"
@@ -36,40 +83,36 @@ export default function LoginModal({
           <>
             <ModalHeader className="flex flex-col gap-1">Log in</ModalHeader>
             <ModalBody>
+              {error && <p className="text-red-500 text-sm">{error}</p>}
               <Input
-                label="username"
+                label="Username"
                 placeholder="Enter your username"
                 variant="bordered"
+                name="username"
+                value={formData.username}
+                onChange={handleInputChange}
               />
               <Input
                 label="Password"
                 placeholder="Enter your password"
                 type="password"
                 variant="bordered"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
               />
               <div className="flex py-2 px-1 justify-between">
-                <Checkbox
-                  classNames={{
-                    label: "text-small",
+                <Link
+                  color="primary"
+                  href="#"
+                  size="sm"
+                  onPress={() => {
+                    onOpenRegister?.();
+                    onClose();
                   }}
                 >
-                  Remember me
-                </Checkbox>
-                <div className="flex gap-2">
-                  <Link color="primary" href="#" size="sm">
-                    Forgot password?
-                  </Link>
-                  <Link
-                    color="primary"
-                    size="sm"
-                    onPress={() => {
-                      onClose();
-                      onOpenRegister?.();
-                    }}
-                  >
-                    Sign up
-                  </Link>
-                </div>
+                  Sign up
+                </Link>
               </div>
             </ModalBody>
             <ModalFooter>
@@ -78,12 +121,11 @@ export default function LoginModal({
               </Button>
               <Button
                 color="primary"
-                onPress={() => {
-                  onLogin?.();
-                  onClose();
-                }}
+                onPress={handleSubmit}
+                isLoading={isLoading}
+                isDisabled={isLoading}
               >
-                Sign in
+                Log in
               </Button>
             </ModalFooter>
           </>

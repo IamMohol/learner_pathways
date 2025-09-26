@@ -1,3 +1,4 @@
+import { useContext } from "react";
 import { Link } from "@heroui/link";
 import { Snippet } from "@heroui/snippet";
 import { Code } from "@heroui/code";
@@ -10,10 +11,10 @@ import { Button } from "@heroui/button";
 import { useDisclosure } from "@heroui/modal";
 import LoginModal from "@/components/modalAuth";
 import RegisterModal from "@/components/modalRegister";
-import { useAuth } from "@/lib/authContext";
+import { AuthContext } from "@/lib/authContext";
 
 export default function IndexPage() {
-  const { login } = useAuth();
+  const { login } = useContext(AuthContext);
   const {
     isOpen: isLoginOpen,
     onOpen: onLoginOpen,
