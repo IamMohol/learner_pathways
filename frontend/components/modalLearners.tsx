@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import {
   Modal,
@@ -12,18 +14,23 @@ import { Button } from "@heroui/button";
 import { AddIcon } from "./icons";
 import { Input } from "@heroui/input";
 
-// Define the shape of the form data
 interface FormData {
   firstName: string;
   lastName: string;
 }
 
-export default function LearnersModal() {
+interface LearnersModalProps {
+  onLearnerAdded?: (learner: {
+    id: number;
+    firstName: string;
+    lastName: string;
+  }) => void;
+}
+
+export default function LearnersModal({ onLearnerAdded }: LearnersModalProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // 1. STATE TO PREVENT HYDRATION MISMATCH
   const [hasMounted, setHasMounted] = useState(false);
-
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
@@ -31,7 +38,6 @@ export default function LearnersModal() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // 2. EFFECT HOOK TO INDICATE CLIENT MOUNT
   useEffect(() => {
     setHasMounted(true);
   }, []);
@@ -42,7 +48,6 @@ export default function LearnersModal() {
   };
 
   const handleOpen = () => {
-    // Reset state when opening the modal
     setFormData({ firstName: "", lastName: "" });
     setError(null);
     onOpen();
@@ -60,49 +65,41 @@ export default function LearnersModal() {
     try {
       const response = await fetch("/api/learners", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-      // const testUserData = await response.json();
-      // console.log("HEr is the data");
-      // console.log(testUserData.body);
+
       if (!response.ok) {
-        // const errorData = await response.json();
         throw new Error(`Failed to save student (Status: ${response.status})`);
       }
 
-      // Success
-      alert(
-        `Successfully added student: ${formData.firstName} ${formData.lastName}`
-      );
+      const newLearner = await response.json();
+
+      // ✅ Notify parent
+      if (onLearnerAdded) {
+        onLearnerAdded(newLearner);
+      }
+
       onClose();
     } catch (err: any) {
       console.error("Submission error:", err);
-      setError(
-        err.message || "An unexpected error occurred during submission."
-      );
+      setError(err.message || "An unexpected error occurred.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // 3. CONDITIONAL RENDER
-  if (!hasMounted) {
-    return null;
-  }
+  if (!hasMounted) return null;
 
   return (
     <>
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-3 mb-4">
         <Button color="primary" endContent={<AddIcon />} onPress={handleOpen}>
           Add Student
         </Button>
       </div>
 
-      {/* The Modal is rendered only after the client mounts */}
-      <Modal backdrop={"opaque"} isOpen={isOpen} onClose={onClose} size="5xl">
+      <Modal backdrop="opaque" isOpen={isOpen} onClose={onClose} size="5xl">
         <ModalContent>
           {(onClose) => (
             <>
@@ -116,7 +113,6 @@ export default function LearnersModal() {
                   width={300}
                 />
 
-                {/* Input Fields */}
                 <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
                   <Input
                     label="First Name"
@@ -145,7 +141,6 @@ export default function LearnersModal() {
                   />
                 </div>
 
-                {/* Global Error Display */}
                 {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
               </ModalBody>
 

@@ -1,7 +1,6 @@
 import { title, subtitle } from "@/components/primitives";
 import DefaultLayout from "@/layouts/default";
 import LearnersTable from "@/components/learnersTable";
-import LearnersModal from "@/components/modalLearners";
 export default function LearnersPage() {
   return (
     <DefaultLayout>
@@ -15,7 +14,6 @@ export default function LearnersPage() {
               Add learners, grades, and generate pathways
             </div>
           </div>
-          <LearnersModal />
         </div>
         <div className="">
           <LearnersTable />
