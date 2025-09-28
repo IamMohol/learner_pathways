@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../lib/generated/prisma"
+  output = "../generated/prisma-client" 
 }
 
 datasource db {
@@ -28,19 +28,16 @@ model Pathway {
   id         Int       @id @default(autoincrement())
   name       String    @unique
   description String?
-  subjects   Subject[]
   pathways   PathwaySubject[]
 }
 
 model PathwaySubject {
   id        Int     @id @default(autoincrement())
   pathwayId Int
-  subjectId Int
-  weight    Float   @default(1.0) 
-
   pathway   Pathway @relation(fields: [pathwayId], references: [id])
+  subjectId Int
   subject   Subject @relation(fields: [subjectId], references: [id])
-
+  weight    Float   @default(1.0)
   @@unique([pathwayId, subjectId]) 
 }
 
@@ -48,9 +45,6 @@ model PathwaySubject {
 model Subject {
   id         Int       @id @default(autoincrement())
   name       String
-  weight     Float     @default(1.0)
-  pathwayId  Int
-  pathway    Pathway   @relation(fields: [pathwayId], references: [id])
   marks       Mark[]
   pathways   PathwaySubject[] 
 }

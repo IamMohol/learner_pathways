@@ -9,12 +9,14 @@ import {
 import Link from "next/link";
 import { Button } from "@heroui/button";
 import { Avatar } from "@heroui/avatar";
+import { Logo } from "./icons";
 import {
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
 } from "@heroui/dropdown";
+import NextLink from "next/link";
 import { AuthContext } from "@/lib/authContext";
 import { siteConfig } from "@/config/site";
 import LoginModal from "@/components/modalAuth";
@@ -46,7 +48,10 @@ export default function Navbar() {
       <HeroNavbar>
         {/* Brand */}
         <NavbarBrand>
-          <p className="font-bold text-inherit">{siteConfig.name}</p>
+          <NextLink className="flex justify-start items-center gap-1" href="/">
+            <Logo />
+            <p className="font-bold text-inherit">Learner Pathway</p>
+          </NextLink>
         </NavbarBrand>
 
         {/* Desktop nav items */}

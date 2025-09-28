@@ -40,3 +40,6 @@ package-lock.json
 bun.lockb
 
 /lib/generated/prisma
+
+# Prisma generated client
+/generated/prisma-client

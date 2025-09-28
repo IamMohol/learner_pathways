@@ -8,7 +8,6 @@ export async function POST(req: Request) {
   try {
     const { username, password } = await req.json();
 
-    // Validation
     if (!username || !password) {
       return NextResponse.json(
         { message: "Username and password are required" },
@@ -16,7 +15,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Check if user exists
     const user = await prisma.user.findUnique({
       where: { username },
     });
@@ -28,7 +26,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
@@ -38,7 +35,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Success: User authenticated
     return NextResponse.json({ message: "Login successful" }, { status: 200 });
   } catch (error) {
     console.error("Login error:", error);

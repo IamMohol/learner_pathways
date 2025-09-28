@@ -15,9 +15,9 @@ import MarksModal from "./modalMarks";
 const columns = [
   { name: "NAME", uid: "name" },
   { name: "SUBJECT", uid: "subject" },
-  { name: "STATUS", uid: "status" },
   { name: "ACTIONS", uid: "actions" },
 ];
+import { Learner } from "@/lib/types";
 
 export const users = [
   {
@@ -180,6 +180,7 @@ const statusColorMap: any = {
 };
 
 export default function LearnersTable() {
+  // const [];
   const renderCell = React.useCallback((user: any, columnKey: any) => {
     const cellValue = user[columnKey];
 
