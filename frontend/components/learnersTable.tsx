@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableHeader,
@@ -10,66 +12,13 @@ import {
 import { Tooltip } from "@heroui/tooltip";
 import { User } from "@heroui/user";
 import { Chip } from "@heroui/chip";
-import { Button } from "@heroui/button";
 import MarksModal from "./modalMarks";
+import { DeleteIcon } from "./icons";
+
+// Same columns as before
 const columns = [
   { name: "NAME", uid: "name" },
-  { name: "SUBJECT", uid: "subject" },
   { name: "ACTIONS", uid: "actions" },
-];
-import { Learner } from "@/lib/types";
-
-export const users = [
-  {
-    id: 1,
-    name: "Tony Reichert",
-    subject: "CEO",
-    team: "Management",
-    status: "active",
-    age: "29",
-    avatar: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
-    email: "tony.reichert@example.com",
-  },
-  {
-    id: 2,
-    name: "Zoey Lang",
-    subject: "Technical Lead",
-    team: "Development",
-    status: "paused",
-    age: "25",
-    avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704d",
-    email: "zoey.lang@example.com",
-  },
-  {
-    id: 3,
-    name: "Jane Fisher",
-    subject: "Senior Developer",
-    team: "Development",
-    status: "active",
-    age: "22",
-    avatar: "https://i.pravatar.cc/150?u=a04258114e29026702d",
-    email: "jane.fisher@example.com",
-  },
-  {
-    id: 4,
-    name: "William Howard",
-    subject: "Community Manager",
-    team: "Marketing",
-    status: "vacation",
-    age: "28",
-    avatar: "https://i.pravatar.cc/150?u=a048581f4e29026701d",
-    email: "william.howard@example.com",
-  },
-  {
-    id: 5,
-    name: "Kristen Copper",
-    subject: "Sales Manager",
-    team: "Sales",
-    status: "active",
-    age: "24",
-    avatar: "https://i.pravatar.cc/150?u=a092581d4ef9026700d",
-    email: "kristen.cooper@example.com",
-  },
 ];
 
 export const EyeIcon = (props: any) => {
@@ -101,57 +50,6 @@ export const EyeIcon = (props: any) => {
   );
 };
 
-export const DeleteIcon = (props: any) => {
-  return (
-    <svg
-      aria-hidden="true"
-      fill="none"
-      focusable="false"
-      height="1em"
-      role="presentation"
-      viewBox="0 0 20 20"
-      width="1em"
-      {...props}
-    >
-      <path
-        d="M17.5 4.98332C14.725 4.70832 11.9333 4.56665 9.15 4.56665C7.5 4.56665 5.85 4.64998 4.2 4.81665L2.5 4.98332"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.5}
-      />
-      <path
-        d="M7.08331 4.14169L7.26665 3.05002C7.39998 2.25835 7.49998 1.66669 8.90831 1.66669H11.0916C12.5 1.66669 12.6083 2.29169 12.7333 3.05835L12.9166 4.14169"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.5}
-      />
-      <path
-        d="M15.7084 7.61664L15.1667 16.0083C15.075 17.3166 15 18.3333 12.675 18.3333H7.32502C5.00002 18.3333 4.92502 17.3166 4.83335 16.0083L4.29169 7.61664"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.5}
-      />
-      <path
-        d="M8.60834 13.75H11.3833"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.5}
-      />
-      <path
-        d="M7.91669 10.4167H12.0834"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.5}
-      />
-    </svg>
-  );
-};
-
 export const EditIcon = (props: any) => {
   return (
     <svg
@@ -172,79 +70,80 @@ export const EditIcon = (props: any) => {
     </svg>
   );
 };
-
-const statusColorMap: any = {
-  active: "success",
-  paused: "danger",
-  vacation: "warning",
+type Learner = {
+  id: number;
+  firstName: string;
+  lastName: string;
 };
 
 export default function LearnersTable() {
-  // const [];
-  const renderCell = React.useCallback((user: any, columnKey: any) => {
-    const cellValue = user[columnKey];
+  const [learners, setLearners] = useState<Learner[]>([]);
+  const [loading, setLoading] = useState(true);
 
-    switch (columnKey) {
-      case "name":
-        return (
-          <User
-            avatarProps={{ radius: "lg", src: user.avatar }}
-            description={user.email}
-            name={cellValue}
-          >
-            {user.email}
-          </User>
-        );
-      case "subject":
-        return (
-          <div className="flex flex-col">
-            <p className="text-bold text-sm capitalize">{cellValue}</p>
-            <p className="text-bold text-sm capitalize text-default-400">
-              {user.team}
-            </p>
-          </div>
-        );
-      case "status":
-        return (
-          <Chip
-            className="capitalize"
-            color={statusColorMap[user.status]}
-            size="sm"
-            variant="flat"
-          >
-            {cellValue}
-          </Chip>
-        );
-      case "actions":
-        return (
-          <div className="relative flex items-center justify-center gap-2">
-            <Tooltip content="Details">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <EyeIcon />
-              </span>
-            </Tooltip>
-            <Tooltip content="Edit user">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <EditIcon />
-              </span>
-            </Tooltip>
-            <Tooltip content="Add Marks">
-              <MarksModal />
-            </Tooltip>
-            <Tooltip color="danger" content="Delete user">
-              <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                <DeleteIcon />
-              </span>
-            </Tooltip>
-          </div>
-        );
-      default:
-        return cellValue;
-    }
+  // Fetch learners from API
+  useEffect(() => {
+    const fetchLearners = async () => {
+      try {
+        const res = await fetch("/api/learners");
+        if (!res.ok) throw new Error("Failed to fetch learners");
+        const data = await res.json();
+        setLearners(data.learners || []);
+      } catch (err) {
+        console.error("❌ Error fetching learners:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLearners();
   }, []);
 
+  const renderCell = React.useCallback(
+    (learner: Learner, columnKey: string) => {
+      switch (columnKey) {
+        case "name":
+          return (
+            <User
+              name={`${learner.firstName} ${learner.lastName}`}
+              avatarProps={{
+                radius: "lg",
+                src: `https://i.pravatar.cc/150?u=${learner.id}`,
+              }}
+              description={`Learner ID: ${learner.id}`}
+            />
+          );
+        case "actions":
+          return (
+            <div className="relative flex items-center justify-center gap-2">
+              <Tooltip content="Details">
+                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                  <EyeIcon />
+                </span>
+              </Tooltip>
+              <Tooltip content="Edit learner">
+                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                  <EditIcon />
+                </span>
+              </Tooltip>
+              <Tooltip content="Add Marks">
+                <MarksModal />
+              </Tooltip>
+              <Tooltip color="danger" content="Delete learner">
+                <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                  <DeleteIcon />
+                </span>
+              </Tooltip>
+            </div>
+          );
+        default:
+          return null;
+      }
+    },
+    []
+  );
+
   return (
-    <Table aria-label="Example table with custom cells">
+    <Table aria-label="Learners table" isStriped removeWrapper>
       <TableHeader columns={columns}>
         {(column) => (
           <TableColumn
@@ -255,7 +154,11 @@ export default function LearnersTable() {
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody items={users}>
+
+      <TableBody
+        items={learners}
+        emptyContent={loading ? "Loading learners..." : "No learners found."}
+      >
         {(item) => (
           <TableRow key={item.id}>
             {(columnKey) => (

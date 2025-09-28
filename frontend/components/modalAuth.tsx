@@ -61,7 +61,6 @@ export default function LoginModal({
         return;
       }
 
-      // Success: Update AuthContext and close modal
       onLogin?.();
       onOpenChange();
     } catch (err) {
