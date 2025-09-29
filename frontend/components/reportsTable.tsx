@@ -9,7 +9,7 @@ import {
   TableCell,
 } from "@heroui/table";
 import { Button } from "@heroui/button";
-import ReportModal from "./ReportModal";
+import ReportModal, { LearnerReportAPI } from "./ReportModal";
 
 type Learner = {
   id: number;
@@ -17,22 +17,11 @@ type Learner = {
   lastName: string;
 };
 
-type LearnerReport = {
-  learnerId: number;
-  learnerName: string;
-  totalAverage: number;
-  pathways: {
-    pathwayId: number;
-    pathwayName: string;
-    averageScore: number;
-    viabilityPercentage: number;
-  }[];
-};
-
 export default function LearnerPathwaysTable() {
   const [learners, setLearners] = useState<Learner[]>([]);
-  const [report, setReport] = useState<LearnerReport | null>(null);
+  const [report, setReport] = useState<LearnerReportAPI | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [loadingReport, setLoadingReport] = useState(false);
 
   useEffect(() => {
     const fetchLearners = async () => {
@@ -50,15 +39,20 @@ export default function LearnerPathwaysTable() {
 
   const handleGenerateReport = async (learnerId: number) => {
     try {
-      setReport(null); // Reset previous report
-      setModalOpen(true); // Open modal immediately to show spinner
+      setModalOpen(true);
+      setReport(null);
+      setLoadingReport(true);
+
       const res = await fetch(`/api/reports/pathways?learnerId=${learnerId}`);
       if (!res.ok) throw new Error("Failed to generate report");
-      const data: LearnerReport = await res.json();
-      setReport(data); // Modal updates automatically
+
+      const data: LearnerReportAPI = await res.json();
+      setReport(data);
     } catch (err) {
       console.error("Error generating report", err);
       setReport(null);
+    } finally {
+      setLoadingReport(false);
     }
   };
 
@@ -77,11 +71,12 @@ export default function LearnerPathwaysTable() {
               <TableCell>
                 {learner.firstName} {learner.lastName} (ID: {learner.id})
               </TableCell>
-              <TableCell>
+              <TableCell className="text-center">
                 <Button
                   color="primary"
                   size="sm"
                   onPress={() => handleGenerateReport(learner.id)}
+                  isLoading={loadingReport}
                 >
                   Generate Report
                 </Button>

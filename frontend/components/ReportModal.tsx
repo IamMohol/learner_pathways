@@ -11,13 +11,14 @@ import { Button } from "@heroui/button";
 import { Card, CardBody, CardFooter } from "@heroui/card";
 import { CircularProgress } from "@heroui/progress";
 import { Chip } from "@heroui/chip";
-type PathwayReport = {
+
+export type PathwayReport = {
   pathway: string;
   description: string;
   viabilityPercentage: string;
 };
 
-type LearnerReportAPI = {
+export type LearnerReportAPI = {
   learner: { id: number; name: string };
   totalAverage: string | number;
   pathwayReports: PathwayReport[];
@@ -40,7 +41,7 @@ export default function ReportModal({
     const pathways = report.pathwayReports.map((p, idx) => ({
       id: idx,
       name: p.pathway,
-      description: p.description,
+      description: p.description || "",
       viabilityPercentage:
         p.viabilityPercentage === "N/A" ? 0 : Number(p.viabilityPercentage),
     }));
@@ -54,7 +55,6 @@ export default function ReportModal({
 
   const loading = !safeReport;
 
-  // Predefined gradients for each card (loop through)
   const gradients = [
     "from-violet-500 to-fuchsia-500",
     "from-green-400 to-teal-500",
