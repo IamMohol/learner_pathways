@@ -9,7 +9,7 @@ import { GithubIcon } from "@/components/icons";
 import DefaultLayout from "@/layouts/default";
 import { Button } from "@heroui/button";
 import { AddIcon } from "@/components/icons";
-import LearnerPathwaysTable from "@/components/TableLearnerPathways";
+import LearnerPathwaysTable from "@/components/reportsTable";
 export default function ReportsPage() {
   return (
     <DefaultLayout>

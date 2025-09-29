@@ -83,10 +83,10 @@ export default function Navbar() {
                 />
               </DropdownTrigger>
               <DropdownMenu aria-label="User menu" variant="flat">
-                <DropdownItem key="profile" asChild>
+                <DropdownItem key="profile">
                   <Link href="/profile">Profile</Link>
                 </DropdownItem>
-                <DropdownItem key="settings" asChild>
+                <DropdownItem key="settings">
                   <Link href="/settings">Settings</Link>
                 </DropdownItem>
                 <DropdownItem key="logout" color="danger" onPress={logout}>

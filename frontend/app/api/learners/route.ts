@@ -1,6 +1,7 @@
 // import prisma from "@/lib/prisma"; // Adjust this import path as necessary (e.g., "../../../lib/prisma")
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@/lib/generated/prisma";
+// import { PrismaClient } from "@/lib/generated/prisma";
+import { PrismaClient } from "@/generated/prisma-client";
 const prisma = new PrismaClient();
 // Define the expected structure for type safety, but do not export it from here
 type LearnerData = {

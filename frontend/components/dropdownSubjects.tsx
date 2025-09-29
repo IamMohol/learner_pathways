@@ -1,17 +1,16 @@
 "use client";
+
 import { Subject } from "@/lib/types";
 import { Select, SelectItem } from "@heroui/select";
 import React, { useEffect, useState } from "react";
 
-export const subjects = [
-  { key: "math", label: "Math" },
-  { key: "english", label: "English" },
-  { key: "physics", label: "Physics" },
-  { key: "biology", label: "Biology" },
-];
+type Props = {
+  selected: number | ""; // subjectId from DB
+  onChange: (value: number) => void;
+};
 
-export default function SubjectDropdown() {
-  const [subjects, setSubjets] = useState<Subject[]>([]);
+export default function SubjectDropdown({ selected, onChange }: Props) {
+  const [subjects, setSubjects] = useState<Subject[]>([]);
 
   useEffect(() => {
     const fetchSubjects = async () => {
@@ -19,22 +18,30 @@ export default function SubjectDropdown() {
         const res = await fetch("/api/subjects");
         if (!res.ok) throw new Error("Failed to load subjects");
         const data = await res.json();
-        setSubjets(data.subjects || []);
+        setSubjects(data.subjects || []);
       } catch (err) {
-        console.log("Error fetching subjects", err);
+        console.error("Error fetching subjects", err);
       }
     };
     fetchSubjects();
   }, []);
+
   return (
     <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
       <Select
         className="max-w-xs"
-        label="Select an subject"
+        label="Select a subject"
         labelPlacement="outside"
+        selectedKeys={selected ? [String(selected)] : []} // ✅ must be string
+        onSelectionChange={(keys) => {
+          const key = Array.from(keys)[0]; // HeroUI returns a Set
+          if (key) {
+            onChange(Number(key)); // convert back to number
+          }
+        }}
       >
         {subjects.map((subject) => (
-          <SelectItem key={subject.id}>{subject.name}</SelectItem>
+          <SelectItem key={String(subject.id)}>{subject.name}</SelectItem>
         ))}
       </Select>
     </div>
