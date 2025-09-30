@@ -4,8 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "prisma generate && prisma migrate deploy && next build",
     "start": "next start",
+    "prisma:migrate": "prisma migrate deploy",
+    "prisma:generate": "prisma generate",
     "lint": "eslint --fix"
   },
   "prisma": {
