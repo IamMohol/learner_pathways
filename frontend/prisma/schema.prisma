@@ -1,65 +1,66 @@
 generator client {
   provider = "prisma-client-js"
-  output = "../generated/prisma-client" 
+  output   = "../generated/prisma-client"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  firstName String
-  lastName String
-  username  String   @unique
-  password  String
-  createdAt DateTime @default(now())
-} 
+  id        Int      @id @default(autoincrement()) @db.Int
+  firstName String   @db.VarChar(255)
+  lastName  String   @db.VarChar(255)
+  username  String   @unique @db.VarChar(255)
+  password  String   @db.VarChar(255)
+  createdAt DateTime @default(now()) @db.DateTime(3)
+}
 
 model Learner {
-  id         Int       @id @default(autoincrement())
-  firstName  String
-  lastName   String
-  marks Mark[]
+  id        Int      @id @default(autoincrement()) @db.Int
+  firstName String   @db.VarChar(255)
+  lastName  String   @db.VarChar(255)
+  marks     Mark[]
 }
 
 model Pathway {
-  id         Int       @id @default(autoincrement())
-  name       String    @unique
-  description String?
-  pathways   PathwaySubject[]
+  id          Int              @id @default(autoincrement()) @db.Int
+  name        String           @unique @db.VarChar(255)
+  description String?          @db.Text
+  pathways    PathwaySubject[]
 }
 
 model PathwaySubject {
-  id        Int     @id @default(autoincrement())
-  pathwayId Int
-  pathway   Pathway @relation(fields: [pathwayId], references: [id])
-  subjectId Int
-  subject   Subject @relation(fields: [subjectId], references: [id])
-  weight    Float   @default(1.0)
-  @@unique([pathwayId, subjectId]) 
-}
+  id         Int    @id @default(autoincrement()) @db.Int
+  pathwayId  Int    @db.Int
+  pathway    Pathway @relation(fields: [pathwayId], references: [id], onDelete: Cascade)
+  subjectId  Int    @db.Int
+  subject    Subject @relation(fields: [subjectId], references: [id])
+  weight     Float  @default(1.0) @db.Float
 
+  @@unique([pathwayId, subjectId])
+  @@index([pathwayId])
+  @@index([subjectId])
+}
 
 model Subject {
-  id         Int       @id @default(autoincrement())
-  name       String
-  marks       Mark[]
-  pathways   PathwaySubject[] 
+  id       Int              @id @default(autoincrement()) @db.Int
+  name     String           @db.VarChar(255)
+  marks    Mark[]
+  pathways PathwaySubject[]
 }
 
-
 model Mark {
-  id         Int      @id @default(autoincrement())
-  score      Float   
-  createdAt  DateTime @default(now())
-  learnerId  Int
-  subjectId  Int
-  learner    Learner  @relation(fields: [learnerId], references: [id])
-  subject    Subject  @relation(fields: [subjectId], references: [id])
+  id        Int      @id @default(autoincrement()) @db.Int
+  score     Float    @db.Float
+  createdAt DateTime @default(now()) @db.DateTime(3)
+  learnerId Int      @db.Int
+  subjectId Int      @db.Int
+  learner   Learner  @relation(fields: [learnerId], references: [id], onDelete: Cascade)
+  subject   Subject  @relation(fields: [subjectId], references: [id])
 
+  @@unique([learnerId, subjectId], name: "one_mark_per_learner_subject_exam")
   @@index([learnerId])
   @@index([subjectId])
-  @@unique([learnerId, subjectId], map: "one_mark_per_learner_subject_exam")
 }
