@@ -43,3 +43,4 @@ bun.lockb
 
 # Prisma generated client
 /generated/prisma-client
+dev.db
