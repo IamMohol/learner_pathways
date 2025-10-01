@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import {
   Modal,
   ModalContent,
@@ -9,7 +9,7 @@ import {
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Link } from "@heroui/link";
-
+import { AuthContext } from "@/lib/authContext";
 interface LoginModalProps {
   isOpen: boolean;
   onOpenChange: () => void;
@@ -24,6 +24,7 @@ export default function LoginModal({
   onLogin,
   onOpenRegister,
 }: LoginModalProps) {
+  const { login } = useContext(AuthContext); // Add AuthContext
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -39,28 +40,24 @@ export default function LoginModal({
   const handleSubmit = async () => {
     setError(null);
     setIsLoading(true);
-
     try {
       if (!formData.username || !formData.password) {
         setError("Username and password are required");
         setIsLoading(false);
         return;
       }
-
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-
       const data = await response.json();
-
       if (!response.ok) {
         setError(data.message || "Login failed");
         setIsLoading(false);
         return;
       }
-
+      login(); // Set isLoggedIn=true
       onLogin?.();
       onOpenChange();
     } catch (err) {

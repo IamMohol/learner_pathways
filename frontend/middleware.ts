@@ -1,22 +1,19 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
-export function middleware(request: NextRequest) {
-  const isLoggedIn = request.cookies.get("isLoggedIn")?.value === "true";
-  const { pathname } = request.nextUrl;
-
+export async function middleware(request: NextRequest) {
+  const cookieStore = await request.cookies;
+  const isLoggedIn = cookieStore.get("isLoggedIn")?.value === "true";
   console.log(
-    `Middleware: isLoggedIn=${isLoggedIn}, pathname=${pathname}, cookies=${JSON.stringify(request.cookies.getAll())}`
+    `Middleware: isLoggedIn=${isLoggedIn}, pathname=${request.nextUrl.pathname}, cookies=${JSON.stringify(
+      cookieStore.getAll()
+    )}`
   );
-
-  if (pathname === "/" || isLoggedIn) {
-    return NextResponse.next();
+  if (!isLoggedIn && ["/hub", "/reports"].includes(request.nextUrl.pathname)) {
+    return NextResponse.redirect(new URL("/", request.url));
   }
-
-  console.log("Middleware: Redirecting to /");
-  return NextResponse.redirect(new URL("/", request.url));
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/hub/:path*", "/reports/:path*"],
+  matcher: ["/hub", "/reports"],
 };

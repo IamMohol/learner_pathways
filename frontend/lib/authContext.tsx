@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, ReactNode } from "react";
 
 interface AuthContextProps {
   isLoggedIn: boolean;
@@ -12,10 +12,14 @@ export const AuthContext = createContext<AuthContextProps>({
   logout: () => {},
 });
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("isLoggedIn") === "true";
+      const cookieValue = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("isLoggedIn="))
+        ?.split("=")[1];
+      return cookieValue === "true";
     }
     return false;
   });
@@ -23,21 +27,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (typeof window !== "undefined") {
       localStorage.setItem("isLoggedIn", isLoggedIn.toString());
-      // ✅ sync cookie for middleware
-      document.cookie = `isLoggedIn=${isLoggedIn}; path=/`;
+      document.cookie = `isLoggedIn=${isLoggedIn}; path=/; SameSite=Lax; Secure=${
+        process.env.NODE_ENV === "production"
+      }`;
     }
   }, [isLoggedIn]);
 
-  const login = () => {
-    setIsLoggedIn(true);
-  };
-
+  const login = () => setIsLoggedIn(true);
   const logout = () => {
     setIsLoggedIn(false);
     if (typeof window !== "undefined") {
       localStorage.removeItem("isLoggedIn");
-      // ✅ clear cookie
-      document.cookie = "isLoggedIn=; path=/; max-age=0";
+      document.cookie = "isLoggedIn=; path=/; max-age=0; SameSite=Lax";
     }
   };
 

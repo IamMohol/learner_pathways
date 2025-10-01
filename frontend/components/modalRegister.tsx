@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import {
   Modal,
   ModalContent,
@@ -8,7 +8,7 @@ import {
 } from "@heroui/modal";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
-
+import { AuthContext } from "@/lib/authContext";
 interface RegisterModalProps {
   isOpen: boolean;
   onOpenChange: () => void;
@@ -21,6 +21,7 @@ export default function RegisterModal({
   onOpenChange,
   onRegister,
 }: RegisterModalProps) {
+  const { login } = useContext(AuthContext); // Add AuthContext
   const [formData, setFormData] = useState({
     username: "",
     firstName: "",
@@ -52,7 +53,6 @@ export default function RegisterModal({
       setIsLoading(false);
       return;
     }
-
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
       setIsLoading(false);
@@ -65,9 +65,7 @@ export default function RegisterModal({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-
       const data = await response.json();
-
       if (!response.ok) {
         setError(data.message || "Registration failed");
         setIsLoading(false);
@@ -75,6 +73,7 @@ export default function RegisterModal({
       }
 
       // Success: Update AuthContext and close modal
+      login(); // Set isLoggedIn=true
       onRegister?.();
       onOpenChange();
     } catch (err) {
@@ -109,7 +108,7 @@ export default function RegisterModal({
                 placeholder="Enter your first name"
                 variant="bordered"
                 name="firstName"
-                value={formData.firstName}
+                value={formData.firstName} // Fixed typo: foArmData -> formData
                 onChange={handleInputChange}
               />
               <Input

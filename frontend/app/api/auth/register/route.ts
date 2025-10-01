@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-// import { PrismaClient } from "@/lib/generated/prisma";
+import { cookies } from "next/headers";
 import { PrismaClient } from "@/generated/prisma-client";
 import bcrypt from "bcrypt";
 
@@ -7,17 +7,26 @@ const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
   try {
-    const { username, firstName, lastName, password, confirmPassword } =
-      await req.json();
+    const {
+      username,
+      firstName,
+      lastName,
+      password,
+      confirmPassword,
+    }: {
+      username: string;
+      firstName: string;
+      lastName: string;
+      password: string;
+      confirmPassword: string;
+    } = await req.json();
 
-    // Validation
     if (!username || !firstName || !lastName || !password || !confirmPassword) {
       return NextResponse.json(
         { message: "All fields are required" },
         { status: 400 }
       );
     }
-
     if (password !== confirmPassword) {
       return NextResponse.json(
         { message: "Passwords do not match" },
@@ -25,16 +34,13 @@ export async function POST(req: Request) {
       );
     }
 
-    // Check if username or email already exists
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [{ username }],
-      },
+    // Check if user exists
+    const existingUser = await prisma.user.findUnique({
+      where: { username },
     });
-
     if (existingUser) {
       return NextResponse.json(
-        { message: "Username or email already exists" },
+        { message: "Username already exists" },
         { status: 400 }
       );
     }
@@ -42,7 +48,7 @@ export async function POST(req: Request) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Save user to database
+    // Create user
     await prisma.user.create({
       data: {
         username,
@@ -52,8 +58,17 @@ export async function POST(req: Request) {
       },
     });
 
+    // Set isLoggedIn cookie server-side
+    const cookieStore = await cookies();
+    cookieStore.set("isLoggedIn", "true", {
+      maxAge: 60 * 60 * 24, // 1 day
+      path: "/",
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+    });
+
     return NextResponse.json(
-      { message: "User registered successfully" },
+      { message: "Registration successful" },
       { status: 201 }
     );
   } catch (error) {
